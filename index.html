@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Advanced Text-to-Image with Plugin</title>
+<script src="https://perchance.org/text-to-image-plugin.js"></script>
+<style>
+  #imageContainer {
+    width: 512px;
+    height: 512px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  #imageContainer img {
+    max-width: 100%;
+    max-height: 100%;
+  }
+</style>
+</head>
+<body>
+
+<input type="text" id="promptInput" placeholder="Enter your prompt here">
+<button onclick="generateImage()">Generate</button>
+<div id="imageContainer"></div>
+
+<script>
+function generateImage() {
+  const userPrompt = document.getElementById("promptInput").value;
+  const imageContainer = document.getElementById("imageContainer");
+  imageContainer.innerHTML = "";
+
+  if (userPrompt.trim() === "") {
+    alert("Please enter a prompt.");
+    return;
+  }
+
+  // Define promptData (you can name this list whatever you want)
+  const promptData = {
+    prompt: `fantasy ${userPrompt}, extremely detailed oil painting, unreal 5 render, rhads, bruce pennington, studio ghibli, tim hildebrandt, digital art, octane render, beautiful composition, trending on artstation, award-winning photograph, masterpiece`,
+    // prompt: userPrompt, // You can also just use the user's prompt
+    negativePrompt: "blurry, distorted, bad anatomy", // Example negative prompt
+    guidanceScale: 7, // Adjust guidance scale (1-30)
+    width: 512, // Set width
+    height: 512, // Set height
+    // resolution: "512x768", // or "768x512" or "512x512"  - if width/height are set, resolution is ignored
+    seed: Math.random(), // Random seed for variation
+    saveTitle: "Generated Image", // Title for gallery saving
+    saveDescription: userPrompt, // Description for gallery saving
+    hideGalleryButtons: false, // Show gallery buttons
+  };
+
+  const textToImageElement = document.createElement("text-to-image");
+  // Set promptData as an attribute (important!)
+  textToImageElement.setAttribute("promptData", JSON.stringify(promptData));
+
+  textToImageElement.addEventListener('load', () => {
+    const imgElement = textToImageElement.querySelector('img');
+    if (imgElement) {
+      imageContainer.appendChild(imgElement);
+    } else {
+      console.error("No image found within the text-to-image element.");
+    }
+  });
+
+  textToImageElement.addEventListener('error', (error) => {
+    console.error("Error generating image:", error);
+    imageContainer.innerHTML = "<p>Error generating image. Please check the console.</p>";
+  });
+
+  imageContainer.appendChild(textToImageElement);
+}
+</script>
+
+</body>
+</html>
